@@ -1,11 +1,11 @@
-# Building a minimal Terraform module to deploy a single node ElasticSearch in an AWS 
+# Building a minimal Terraform module to deploy a single node ElasticSearch cluster on AWS 
 
 This documentation below simply explain how I built a minimal Terraform module to deploy a single node ElasticSearch in an AWS 
 
 ## Tools used
 
 Below are the tools and technologies I used for deploying my ElasticSearch cluster to AWS
- - [`Terraform`](https://www.terraform.io/) - This is an infrastructure as code software by [`Hashicorp`](https://www.hashicorp.com/). It allows users to define a data center infrastructure in a high-level configuration language, from which it can create an execution plan to build the infrastructure in a service provider such as [`AWS`](https://aws.amazon.com), [`Google cloud platform`](http://cloud.google.com), [`Microsoft Azure`](https://azure.microsoft.com/en-us/?v=solutions-dropdown) e.t.c.
+ - [`Terraform`](https://www.terraform.io/) - This is an infrastructure as code software by [`Hashicorp`](https://www.hashicorp.com/). It allows users to define a data center infrastructure in a high-level configuration language, from which it can create an execution plan to build the infrastructure with service provider such as [`AWS`](https://aws.amazon.com), [`Google cloud platform`](http://cloud.google.com), [`Microsoft Azure`](https://azure.microsoft.com/en-us/?v=solutions-dropdown) e.t.c.
  - [`Ansible`](https://www.ansible.com/) - This is an open source software that automates software provisioning, configuration management, and application deployment. Ansible connects via SSH, remote PowerShell or via other remote APIs.
 
  - [`Packer`](https://packer.io/) - This is an open source tool for creating identical machine images for multiple platforms from a single source configuration. Packer is lightweight, runs on every major operating system, and is highly performant, creating machine images for multiple platforms in parallel.
@@ -13,8 +13,8 @@ Below are the tools and technologies I used for deploying my ElasticSearch clust
  - [`ElasticSearch`](https://www.elastic.co/) - Elasticsearch is a search engine based on the Lucene library. It provides a distributed, multitenant-capable full-text search engine with an HTTP web interface and schema-free JSON documents.
  - [`Kibana`](https://www.elastic.co/products/kibana) - Kibana is an open source data visualization plugin for Elasticsearch. It provides visualization capabilities on top of the content indexed on an Elasticsearch cluster. Users can create bar, line and scatter plots, or pie charts and maps on top of large volumes of data.
  - [`Node.js`](https://nodejs.org/en/) - Node.js is an open-source, cross-platform JavaScript run-time environment that executes JavaScript code outside of a browser.
- - [`Babel`](``)
- - [`ES6`](``)
+ - [`Babel.js`](`https://babeljs.io/`) -  Babel.js is a free and open-source JavaScript compiler and configurable transpiler used in web development.
+ - [`ES6`]
   
    Basically, I'm using Packer alongside Ansible as a provisoner to create a machine image for ElasticSearch. A machine image is a single static unit that contains a pre-configured operating system and installed software which is used to quickly create new running machines. So I use Terraform to launch an instance with the machine Image on AWS.
 
@@ -66,7 +66,7 @@ Follow the instruction below to set up this infrastructure on your AWS account.
 
             public_key = "YOUR_PUBLIC_KEY_PAIR"
         ```
-        The `public_key` is an SSH-key which is used as authentication to create your server. You would use the ssh key to have terminal access to your server.  
+        The `public_key` is an SSH-key which is used as authentication for your server. You would use the ssh key to have terminal access to your server.  
 
         If you don't have a `public_key`, you can generate one by running the `ssh-keygen` command, copy and paste the content of the public_key as shown above.
 
@@ -82,7 +82,7 @@ Follow the instruction below to set up this infrastructure on your AWS account.
         ```bash
          $ terraform apply
         ```
-        This command would create the infrastructure and output the public-DNS and IP-address to your console. Copy either of the public-DNS or IP-address to log into ElasticSearch cluster. This would prompt your for a login credentials which is shown below
+        This command would create the infrastructure and output the public-DNS and IP-address to your console. Copy either of the public-DNS or IP-address to log into ElasticSearch cluster. This would prompt you for a login credentials which is shown below
 
         ```
         username: admin
@@ -95,6 +95,40 @@ Follow the instruction below to set up this infrastructure on your AWS account.
         $ cd node.js
         ```
     * Run `npm install` to install the project dependencies
+
         ```bash
         $ npm install
         ```
+    * Edit the `esConnection.js` in the `node.js/helpers` directory to specify your elasticSearch cluster hostname
+        ```js
+        const client = new elasticsearch.Client({
+            host: {
+              protocol: 'http',
+              host: 'your-public-dns-or-hostname',
+              port: 9200
+            }
+        })
+        ```
+    * Start the application by running the `npm start` command
+        ```bash
+        $ npm start
+        ```
+5. You can test the API endpoints using application like postman
+
+    * To create an Index, send a POST request to the `/api/createIndex` endpoint. Pass indexName with the value as the body
+        ```
+          REQUEST: POST
+          ENDPOINT: localhost:8000/api/createIndex
+          BODY: indexName: gov
+        ```
+    * To check the health status, send a GET request to the `/api/createIndex` endpoint.
+        ```
+        REQUEST: GET
+        ENDPOINT: localhost:8000/api/healthCheck
+        ```
+    * To populate the elasticSearch clusters with random data, send a GET request to the `/api/indexData`.
+        ```
+        REQUEST: GET
+        ENDPOINT: localhost:8000/api/indexData
+        ```
+    
