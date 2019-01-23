@@ -1,21 +1,36 @@
-import elasticsearch from 'elasticsearch';
+import client from '../helpers/esConnection';
+import { makebulk, indexall } from '../mockData/constituencies';
+import datasets from '../mockData/constituencies.json';
 
-const client = new elasticsearch.Client({
-  host: {
-    protocol: 'http',
-    host: 'ec2-52-15-233-199.us-east-2.compute.amazonaws.com',
-    port: 9200
-  }
-})
-
-
+ /**
+ * @class ElasticSearch
+ */
 class ElasticSearch {
+  /**
+   * @description Check cluster Health
+   *
+   * @param {object} req HTTP request object
+   * @param {object} res   HTTP response object
+   *
+   * @returns {object} returns a JSON object
+   */
   static clusterHealth(req, res) {
-    client.cluster.health({}, (err,resp,status) => {  
-      console.log("-- Client Health --",resp, status);
-    });
+    return client.cluster
+      .health({}, (err, resp) => {
+        res.send({
+          ClusterHealth: resp
+        })
+      })
   }
 
+  /**
+   * @description Create ElasticSearch Index
+   *
+   * @param {object} req HTTP request object
+   * @param {object} res   HTTP response object
+   *
+   * @returns {object} returns a JSON object
+   */
   static createIndex(req, res) {
       const { indexName } = req.body;
       return client.indices
@@ -26,6 +41,25 @@ class ElasticSearch {
           index: index
         }))
         .catch(err => res.status(400).send(err))
+  }
+
+  /**
+   * @description Add random sample data to elasticSearch
+   *
+   * @param {object} req HTTP request object
+   * @param {object} res   HTTP response object
+   *
+   * @returns {object} returns a JSON object
+   */
+  static indexRandomData(req, res) {
+    makebulk(datasets, (response) => {
+      indexall(response, (response) => {
+        res.json({
+          status: false,
+          data: response
+        })
+      })
+    });
   }
 }
 

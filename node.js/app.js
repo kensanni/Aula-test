@@ -13,9 +13,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 routes(app)
 
-app.get('*', (req, res) => {
-  console.log("hello world")
-});
+app.get('*', (req, res) => res.status(200).send({
+  message: 'Welcome to the elasticSearch cluster API.',
+}));
 
 app.set('port', port);
 
