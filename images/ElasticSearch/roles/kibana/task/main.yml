@@ -1,0 +1,29 @@
+---
+#
+# Installs Kibana
+#
+# Add apt-repository for kibana
+- name: Adding kibana apt-repository
+  apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/6.x/apt stable main
+    state: present
+# Install kibana
+- name: install Kibana
+  command: apt-get install kibana
+# Update Kibana config to only allow localhost connections
+- name: update the config file to allow connection on localhost only
+  lineinfile:
+    destfile: /etc/kibana/kibana.yml
+    regexp: "server.host:"
+    line: "server.host: localhost"
+# Enable Kibana Service
+- name: Enable the kibana service
+  systemd:
+    name: kibana
+    enabled: yes
+    daemon_reload: yes
+# Start Kibana Service
+- name: Starts the Kibana service
+  systemd:
+    name: kibana
+    state: started

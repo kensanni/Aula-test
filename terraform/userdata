@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+function startElasticSearchService () {
+  sudo service elasticsearch start
+}
+
+function installKibana () {
+  sudo apt-get install kibana
+}
+
+function startkibanaService () {
+  sudo service kibana start
+}
+
+main () {
+  startElasticSearchService
+  installKibana
+  startkibanaService
+}
+
+main

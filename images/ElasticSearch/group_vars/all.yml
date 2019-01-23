@@ -1,0 +1,8 @@
+---
+  # Hostname of the server the elasticSearch cluster would run on
+  server_name: joinAula-demo.tk www.joinAula-demo.tk
+  # The port Nginx listens to which is redirected to Kibana local port
+  nginx_kibana_port: 80
+  # The web authentication credentials to gain access to Kibana
+  kibana_user: admin
+  kibana_password: Testpassword1234@

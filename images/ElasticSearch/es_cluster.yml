@@ -1,0 +1,10 @@
+---
+- hosts: all
+  become: true
+  remote_user: ubuntu
+  
+  roles:
+    - java
+    - elasticSearch
+    - kibana
+    - nginx

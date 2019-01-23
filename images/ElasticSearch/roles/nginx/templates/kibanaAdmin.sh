@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+echo "{{kibana_user}}:`openssl passwd -apr1`" | sudo tee -a /etc/nginx/htpasswd.users

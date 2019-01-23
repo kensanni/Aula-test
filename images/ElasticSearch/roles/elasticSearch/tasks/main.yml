@@ -1,0 +1,38 @@
+---
+#
+# Installs ElasticSearch
+#
+# Add the apt-key for Elasticsearch
+- name: Add apt-key for elasticSearch
+  apt_key:
+    url: "https://packages.elastic.co/GPG-KEY-elasticsearch"
+    state: present
+# Add  elasticsearch apt-repository
+- name: Add  elasticsearch apt-repository
+  apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/6.x/apt stable main
+    state: present
+# Install Elaticsearch
+- name: Update cache repository and Install elasticsearch
+  apt:
+    name: elasticsearch
+    update_cache: yes
+# Update Elasticsearch config to only allow localhost connections
+- name: update the config file to allow connection on localhost only
+  lineinfile:
+    destfile: /etc/elasticsearch/elasticsearch.yml
+    regexp: "network.host:"
+    line: "network.host: [\"192.168.0.24\", localhost]"
+
+- name: update the config file to set the discovery host
+  lineinfile:
+    destfile: /etc/elasticsearch/elasticsearch.yml
+    regexp: "discovery.zen.ping.unicast.hosts:"
+    line: "discovery.zen.ping.unicast.hosts: [\"192.168.0.24\"]"
+# set the discovery node
+
+# Restart elasticSearch service
+- name: Restart Elasticsearch
+  systemd:
+   name: elasticsearch
+   state: restarted

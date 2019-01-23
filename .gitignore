@@ -1,0 +1,6 @@
+/terraform/terraform.tfvars
+/terraform/terraform.tfstate
+/terraform/terraform.tfstate.backup
+/terraform/.terraform
+/node.js/node_modules
+/images/ElasticSearch/es_cluster.retry
